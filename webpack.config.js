@@ -1,6 +1,16 @@
 const path = require("path");
+const dotenv = require("dotenv");
+
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+env = dotenv.config().parsed;
+
+const envKeys = Object.keys(env).reduce((prev, next) => {
+  prev[`process.env.${next}`] = JSON.stringify(env[next]);
+  return prev;
+}, {});
+const GOOGLE_API_KEY = envKeys["process.env.GOOGLE_API_KEY"];
+console.log("process.env.GOOGLE_API_KEY :>> ", envKeys);
 const Dotenv = require("dotenv-webpack");
-console.log("NEW  :>> ", new Dotenv());
 module.exports = {
   mode: "development",
   entry: "./src/app.ts",
@@ -32,6 +42,12 @@ module.exports = {
   plugins: [
     new Dotenv({
       path: ".env",
+      systemvars: true,
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: "./index.html",
+      GOOGLE_API_KEY: `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}`,
     }),
   ],
 };
